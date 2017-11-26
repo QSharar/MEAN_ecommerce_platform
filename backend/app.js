@@ -19,8 +19,6 @@ app.use(function(req, res, next) {
   });
 
 
-//database
-
 var Products = require("./models/products");
 var Users = require("./models/users");
 mongoose.connect("mongodb://localhost/ecommerce");
@@ -28,26 +26,18 @@ const db = mongoose.connection;
   
 db.once("open", () => console.log( "db connected"));
 
-
-//users = [];
-
-
 app.get("/", (req,res) => {
     
     Products.findProduct().then( prodArray => res.json(prodArray));
-    // res.json(products);
+    
 });
 
 app.post("/addproduct", (req, res) => {
 
-    
-
     Products.addProduct(req.body).then( () => console.log("Prod added")).then(() => res.json(req.body));
-
-
-    //products.push(req.body);
     console.log(req.body);
     res.json(req.body);
+
 });
 
 
@@ -63,8 +53,6 @@ app.post("/register", (req, res) => {
 
     Users.addUser(req.body);
     
-    //console.log(req.body);
-    users.push(req.body);
     generateToken(req, res);
     
 })
@@ -104,7 +92,7 @@ app.post("/login", (req, res) => {
 })
 
 function generateToken(req, res, user){
-    var token = jwt.sign((user[0].length-1), "dummyvalue");
+    var token = jwt.sign((user[0]), "dummyvalue");
     res.json({username: req.body.email, token});
     console.log(token);
 }
