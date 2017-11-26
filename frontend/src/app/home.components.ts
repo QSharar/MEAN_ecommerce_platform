@@ -9,7 +9,7 @@ import {ActivatedRoute} from '@angular/router';
             <mat-grid-list cols="6" rowHeight="1:1">
             <div *ngFor = "let product of products">
             <mat-grid-tile>
-            <mat-card style="cursor:pointer" [routerLink]="['/products', product.id]">
+            <mat-card style="cursor:pointer" [routerLink]="['/products', product._id]">
             <mat-card-title> {{product.title}} </mat-card-title>
             <mat-card-subtitle>{{product.subtitle}}</mat-card-subtitle>
             <mat-card-content>{{product.price}}</mat-card-content>
