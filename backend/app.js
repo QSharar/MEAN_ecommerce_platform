@@ -2,6 +2,7 @@ var express = require("express");
 var morgan = require("morgan");
 var bp = require("body-parser");
 var jwt = require("jsonwebtoken");
+var mongoose = require('mongoose');
 
 var app = express();
 app.use(bp.urlencoded({extended: true}));
@@ -17,33 +18,50 @@ app.use(function(req, res, next) {
     next();
   });
 
+
+//database
+
+var Products = require("./models/products");
+mongoose.connect("mongodb://localhost/ecommerce");
+const db = mongoose.connection;
+  
+db.once("open", () => console.log( "db connected"));
+
+
   
 
 
-
- products = [ {
-                    title: 'Name 1',
-                    price: "Price 1",
-                    subtitle: "SubTitle 1",
-                    id: 134
-                },
-                {
-                    title: "Name 2",
-                    price: "Price 2",
-                    subtitle: "SubTitle 2",
-                    id: 15234
-                }  
-            ];
+// products = [ {
+//                     title: 'Name 1',
+//                     price: "Price 1",
+//                     subtitle: "SubTitle 1",
+//                     id: 134
+//                 },
+//                 {
+//                     title: "Name 2",
+//                     price: "Price 2",
+//                     subtitle: "SubTitle 2",
+//                     id: 15234
+//                 }  
+//             ];
 
 users = [];
 
 
 app.get("/", (req,res) => {
-    res.json(products);
+    
+    Products.findProduct().then( prodArray => res.json(prodArray));
+    // res.json(products);
 });
 
 app.post("/addproduct", (req, res) => {
-    products.push(req.body);
+
+    
+
+    Products.addProduct(req.body).then( () => console.log("Prod added")).then(() => res.json(req.body));
+
+
+    //products.push(req.body);
     console.log(req.body);
     res.json(req.body);
 });
@@ -51,8 +69,12 @@ app.post("/addproduct", (req, res) => {
 
 app.get("/products/:id", (req, res) => {
     
-    let currentProd = products.filter( prod =>  {return prod.id == req.params.id});
-    res.json(currentProd);
+    Products.findProduct({
+        "_id": req.params.id
+    }).then( (product) => res.json(product));
+
+    // let currentProd = products.filter( prod =>  {return prod.id == req.params.id});
+    // res.json(currentProd);
 })
 
 app.post("/register", (req, res) => {
