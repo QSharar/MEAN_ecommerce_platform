@@ -22,30 +22,14 @@ app.use(function(req, res, next) {
 //database
 
 var Products = require("./models/products");
+var Users = require("./models/users");
 mongoose.connect("mongodb://localhost/ecommerce");
 const db = mongoose.connection;
   
 db.once("open", () => console.log( "db connected"));
 
 
-  
-
-
-// products = [ {
-//                     title: 'Name 1',
-//                     price: "Price 1",
-//                     subtitle: "SubTitle 1",
-//                     id: 134
-//                 },
-//                 {
-//                     title: "Name 2",
-//                     price: "Price 2",
-//                     subtitle: "SubTitle 2",
-//                     id: 15234
-//                 }  
-//             ];
-
-users = [];
+//users = [];
 
 
 app.get("/", (req,res) => {
@@ -73,34 +57,54 @@ app.get("/products/:id", (req, res) => {
         "_id": req.params.id
     }).then( (product) => res.json(product));
 
-    // let currentProd = products.filter( prod =>  {return prod.id == req.params.id});
-    // res.json(currentProd);
 })
 
 app.post("/register", (req, res) => {
-    console.log(req.body);
+
+    Users.addUser(req.body);
+    
+    //console.log(req.body);
     users.push(req.body);
     generateToken(req, res);
     
 })
 
 app.post("/login", (req, res) => {
-    var user = users.find( user => user.email === req.body.email);
-    if(user){
+
+    Users.findUser({
+        "email" : req.body.email
+    }).then( (user) => {
+
+        if(user){
+                console.log( `${user[0].password} === ${req.body.password}`)
+                if(user[0].password === req.body.password){
+                    
+                    generateToken(req, res, user);
+                    console.log( `${req.body.password}  === ${user[0].password}`);
+                }else{
+                    sendError(res);
+                }
+            }
+            else{
+                sendError(res);
+            }
+    });
+    //var user = users.find( user => user.email === req.body.email);
+    // if(user){
     
-        if(user.password === req.body.password){
-            generateToken(req, res);
-        }else{
-            sendError(res);
-        }
-    }
-    else{
-        sendError(res);
-    }
+    //     if(user.password === req.body.password){
+    //         generateToken(req, res);
+    //     }else{
+    //         sendError(res);
+    //     }
+    // }
+    // else{
+    //     sendError(res);
+    // }
 })
 
-function generateToken(req, res){
-    var token = jwt.sign((users.length-1), "dummyvalue");
+function generateToken(req, res, user){
+    var token = jwt.sign((user[0].length-1), "dummyvalue");
     res.json({username: req.body.email, token});
     console.log(token);
 }
