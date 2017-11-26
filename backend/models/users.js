@@ -56,6 +56,7 @@ module.exports.findUser = (email) => {
             reject(err);
            
         }else{
+
             resolve(user);
         }
     })
