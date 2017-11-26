@@ -7,9 +7,8 @@ var Products = require("./models/products");
 var Users = require("./models/users");
 
 var app = express();
-app.use(bp.urlencoded({extended: true}));
-app.use(bp.json());
-app.use(morgan('dev'));
+
+app.use([bp.urlencoded({extended: true}), bp.json(), morgan('dev')])
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -29,7 +28,7 @@ app.get("/", (req,res) => {
 app.post("/addproduct", (req, res) => {
     
     Products.addProduct(req.body).then( () => console.log("Prod added")).then(() => res.json(req.body));
-    console.log(req.body);
+   
     res.json(req.body);
 
 });
@@ -55,12 +54,12 @@ app.post("/login", (req, res) => {
     Users.findUser({
         "email" : req.body.email
     }).then( (user) => {
-        console.log(user);
+
         if(user.length !== 0){
                 if(user[0].password === req.body.password){
                     
                     generateToken(req, res, JSON.stringify(user[0]));
-                    console.log( `${req.body.password}  === ${user[0].password}`);
+            
                 }else{
                     sendError(res);
                 }
