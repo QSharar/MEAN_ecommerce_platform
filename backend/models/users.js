@@ -15,21 +15,6 @@ const userSchema = mongoose.Schema({
 
 const Users = mongoose.model('User', userSchema);
 
-// module.exports.addUser = (user) => {
-//     return new Promise( (resolve, reject) => {
-//         Users.create( user, (err) => {
-//             if(err){
-//                 console.log("couldnt add user")
-//                 reject();
-//             }
-//             else{
-//                 console.log("User added");
-//                 resolve();
-//             }
-//         })
-//     })
-// }
-
 module.exports.addUser = (user) => {
     return new Promise( (resolve,reject) => { Users.create(user, (err) => 
         {
